@@ -1,0 +1,136 @@
+<link rel="import" href="../paper-button/paper-button.html">
+
+
+<polymer-element name="date-days" attributes="year,month,day,dayName,date,showDayNames,showWeekNumbers">
+    <template>
+        <style>
+            *{font-family: sans-serif;}
+            td{text-align: right;}
+            .dayName{color:gray;font-size:11px;}
+            .weekNumber{color:gray;}
+            .Sat{color:gray;}
+            .Sun{color:gray;}
+            .selected{background:silver;}
+            .offMonth{color:#ddd;}
+            paper-button{
+                min-width: 0px;
+            }
+            paper-button /deep/ .button-content{
+                padding:3px;
+            }
+            [active]{
+                background:silver;
+            }
+        </style>
+        
+        <table class='month'>
+            <tr class='days'>
+                <template if="{{showWeekNumbers}}">
+                    <td></td>
+                </template>
+                <template if="{{showDayNames}}" repeat="{{day in days}}">
+                    <td class='dayName'>{{day}}</td>
+                </template>
+            </tr>
+            <template repeat="{{week in weeks}}">
+                <tr class='week'>
+                    <template if="{{showWeekNumbers}}">
+                        <td class='weekNumber'>{{week.number}}</td>
+                    </template>
+                    <template repeat="{{d in week.days}}">
+                        <td class='day {{d.name}} {{d.offMonth?"offMonth":""}}'>
+                            <paper-button active="{{(day==d.number)&&!d.offMonth}}" on-mousedown="{{setDay}}" day="{{d.number}}">{{d.number}}</paper-button>
+                        </td>
+                    </template>
+                </tr>
+            </template>
+        </table>      
+    </template>
+    <script>
+        Polymer({
+            // {{day.selected?"selected":""}}
+            days: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            
+            ready: function(){
+                if(!this.year) this.year = new Date().getFullYear();
+                if(!this.month) this.month = new Date().getMonth()+1;
+                if(!this.day) this.day = new Date().getDate();
+                this.setDate();
+                this.build();
+            },
+            setDate: function(){
+                this.date = new Date(this.year,this.month,this.day); 
+                this.dayName = this.days[this.getWeekDay(this.date)];
+            },
+            yearChanged: function(){
+                this.setDate();
+                this.build();
+            },
+            monthChanged: function(){
+                this.setDate();
+                this.build();
+            },
+            
+            build: function(){
+                this.weeks = [];
+                var date = new Date(this.date);
+                date.setDate(1);
+                var baseWeek = this.getWeekNumber(date);
+                var baseMonth = date.getMonth();
+                var nextMonth = new Date(date.getFullYear(),date.getMonth()+1,1).getMonth();
+                var weekDiff = this.getWeekDay(date);
+                date.setDate(date.getDate()-weekDiff-1);
+                while(1){
+                    date.setDate(date.getDate()+1);
+                    if( (date.getMonth()==nextMonth) && (this.getWeekDay(date)==0) )break;
+                    var week = this.getWeekNumber(date)-baseWeek;
+                    if(!this.weeks[week])
+                        this.weeks[week] = {number:this.getWeekNumber(date), days:[]};
+                    var add = {number:date.getDate(), 
+                               name:this.days[this.getWeekDay(date)], 
+                               offMonth:(date.getMonth()!=baseMonth), 
+                               date:this.getDateString(date)
+//                               selected:(this.getDateString(date)==this.getDateString(this.date)) 
+                              };
+                    this.weeks[week].days[this.getWeekDay(date)] = add;
+                }
+            },
+            setDay: function(event,success,element){
+                this.day = element.getAttribute('day');
+                this.setDate();
+            },
+            
+            
+            getWeekDay:function(date){
+                return (date.getDay()+6)%7;
+            },
+            
+            //http://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php
+            getWeekNumber: function(date){
+                var d = new Date(date);
+                d.setHours(0,0,0);
+                d.setDate(d.getDate()+4-(d.getDay()||7));
+                return Math.ceil((((d-new Date(d.getFullYear(),0,1))/8.64e7)+1)/7);
+            },
+            
+            getDateString:function(date){
+                return date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
+            }
+                
+//                if(this.date)
+//                    try{ this.date = new Date(Date.parse(this.date)); }
+//                    catch(e){ this.date = new Date(); }
+//                else   
+//                    this.date = new Date();
+//                console.log('ready',this.date);
+//            yearChanged: function(alt,neu){
+////                var tmp = new Date(Date.parse(neu));
+////                if(tmp == alt) return;
+////                console.log('change',this.date);
+////                this.ready();
+//                this.build();
+//            },
+        });
+    </script>
+</polymer-element>
+    

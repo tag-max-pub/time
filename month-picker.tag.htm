@@ -1,0 +1,81 @@
+<xsl>
+	<xsl:template match='*'>
+		<table class='months'>
+			<xsl:for-each select='//set'>
+				<tr>
+					<xsl:for-each select='month'>
+						<td class='{@selected}' on-tap='select' month='{@month}'>
+							<xsl:value-of select='@name' />
+						</td>
+					</xsl:for-each>
+				</tr>
+			</xsl:for-each>
+		</table>
+	</xsl:template>
+</xsl>
+
+<script>
+	class {
+		$onFrameChange() {
+			// console.log('monthsss')
+			let year = NODE('year');
+			for (let i = 0; i < 3; i++) {
+				let set = NODE('set');
+				for (let j = 0; j < 4; j++) {
+					let number = i * 4 + (j + 1);
+					let month = NODE('month', {
+						month: number,
+						selected: this.$frame.month == number ? 'selected' : '',
+						name: new Date(2000, number - 1, 11).toLocaleString('default', { month: 'short' })
+					});
+					set.appendChild(month);
+				}
+				year.appendChild(set);
+			}
+			this.$data = year;
+			// let months = Array(3).fill(1).map((x, i) =>
+			// 	NODE('set', {}, Array(4).fill(1).map((x, j) =>
+			// 		NODE('month', {
+			// 			number: i * 4 + (j + 1),
+			// 			class: this.$frame.value == i * 4 + (j + 1) ? 'selected' : '',
+			// 			name: new Date(2000, i * 4 + (j + 1) - 1, 11).toLocaleString('default', { month: 'short' })
+			// 		}))))
+			// console.log('months', months)
+			// this.$data = NODE('months', {}, months)
+		}
+		select(node) {
+			this.$frame.month = node.getAttribute('month');
+			this.$event('change');
+		}
+		get value() {
+			return this.$frame.month;
+		}
+	}
+</script>
+
+
+<style>
+	:host {
+		display: inline-block;
+		font-size: 20px;
+		/* font-family: "Lucida Console"; */
+		/* font-weight: 100; */
+		font-family: Helvetica, sans-serif;
+	}
+	table{
+		width: 100%;
+	}
+	td {
+		padding: .2rem;
+		text-align: center;
+	}
+
+	.selected {
+		background: #ddd;
+	}
+
+	td:hover {
+		background: silver;
+		cursor: pointer;
+	}
+</style>

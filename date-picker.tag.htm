@@ -1,0 +1,53 @@
+<htm>
+	<div id='value'></div>
+	<hr />
+	<year-picker year='2000'></year-picker>
+	<hr />
+	<month-picker month='7'></month-picker>
+	<hr />
+	<day-picker year='2000' month='7' day='1'></day-picker>
+</htm>
+
+
+<script>
+	import './day-picker.tag.js';
+	import './month-picker.tag.js';
+
+	class {
+		$onReady() {
+			let dayPicker = this.$view.Q('day-picker', 1);
+			this.$view.addEventListener('change', e => {
+				console.log('e', e.target, e.target.nodeName);
+				if (e.target.nodeName == 'YEAR-PICKER')
+					dayPicker.setAttribute('year', e.target.value);
+				if (e.target.nodeName == 'MONTH-PICKER')
+					dayPicker.setAttribute('month', e.target.value);
+
+				for (let x of ['year', 'month', 'day'])
+					this.$frame[x] = dayPicker.getAttribute(x)
+			})
+		}
+		$onFrameChange() {
+			let dayPicker = this.$view.Q('day-picker', 1);
+			this.$view.Q('#value', 1).innerHTML =
+				this.$frame.year + '-' +
+				this.$frame.month.padStart(2, '0') + '-' +
+				this.$frame.day.padStart(2, '0')
+		}
+	}
+</script>
+
+<style>
+	:host {
+		display: inline-block;
+	}
+	#value{
+		font-size: 30px;
+		/* font-family: "Lucida Console"; */
+		font-family: Helvetica, sans-serif;
+		text-align: center;
+	}
+	month-picker {
+		width: 100%;
+	}
+</style>
