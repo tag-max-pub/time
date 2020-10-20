@@ -20,23 +20,33 @@ Element.prototype.stringify = XML.stringify
 const HTML = document.createElement('template');
 HTML.innerHTML = `<div id='value'></div>
 	<hr />
-	<year-picker year='2000'></year-picker>
+	<year-picker></year-picker>
 	<hr />
-	<month-picker month='7'></month-picker>
+	<month-picker></month-picker>
 	<hr />
-	<day-picker year='2000' month='7' day='1'></day-picker>`;
+	<day-picker></day-picker>`;
 let STYLE = document.createElement('style');
 STYLE.appendChild(document.createTextNode(`:host {
 		display: inline-block;
+		border: 1px solid #ddd;
+		/* width: 300px; */
 	}
-	#value{
+	#value {
+		margin-top: .5rem;
 		font-size: 30px;
+		font-weight: 300;
 		/* font-family: "Lucida Console"; */
-		font-family: Helvetica, sans-serif;
+		font-family: publicSans, Helvetica, sans-serif;
 		text-align: center;
+		vertical-align: middle;
 	}
 	month-picker {
 		width: 100%;
+	}
+	hr {
+		border: none;
+		height: 1px;
+		background-color: #ddd;
 	}`));
 function QQ(query, i) {
 	let result = Array.from(this.querySelectorAll(query));
@@ -45,6 +55,20 @@ function QQ(query, i) {
 Element.prototype.Q = QQ
 ShadowRoot.prototype.Q = QQ
 DocumentFragment.prototype.Q = QQ
+function ATTR() {  // attributes
+	return new Proxy(
+		Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
+		{
+			set: (target, key, value) => {
+				if (this.getAttribute(key) != value)
+					this.setAttribute(key, value);
+				return Reflect.set(target, key, value);
+			}
+		}
+	)
+}
+Object.defineProperty(Element.prototype, "A", { get: ATTR, configurable:true });
+Object.defineProperty(DocumentFragment.prototype, "A", { get: ATTR, configurable:true });
 class WebTag extends HTMLElement {
 	constructor() {
 		super();
@@ -64,7 +88,7 @@ class WebTag extends HTMLElement {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
 				this.$onFrameChange(
-					this.att,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
+					this.A,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
 					Object.fromEntries(events.map(e => [e.attributeName, e.oldValue]))
 				);
 			} else {
@@ -97,39 +121,33 @@ class WebTag extends HTMLElement {
 			HTML = new DOMParser().parseFromString(HTML, 'text/html').firstChild
 		this.$view.appendChild(HTML);
 	}
-	get $frame() {  // attributes
-		return new Proxy(
-			Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
-			{
-				set: (target, key, value) => {
-					this.setAttribute(key, value);
-					return Reflect.set(target, key, value);
-				}
-			}
-		)
-	}
 };
 import './day-picker.tag.js';
 	import './month-picker.tag.js';
+	import './year-picker.tag.js';
 	class date_picker extends WebTag {
 		$onReady() {
 			let dayPicker = this.$view.Q('day-picker', 1);
-			this.$view.addEventListener('change', e => {
-				console.log('e', e.target, e.target.nodeName);
-				if (e.target.nodeName == 'YEAR-PICKER')
-					dayPicker.setAttribute('year', e.target.value);
-				if (e.target.nodeName == 'MONTH-PICKER')
-					dayPicker.setAttribute('month', e.target.value);
-				for (let x of ['year', 'month', 'day'])
-					this.$frame[x] = dayPicker.getAttribute(x)
+			this.$view.addEventListener('change', event => {
+				let value = this.A.value.split('-');
+				let order = ['year', 'month', 'day'];
+				for (let key in event.detail) {
+					value[order.indexOf(key)] = event.detail[key];
+				}
+				this.A.value = value.join('-');
 			})
 		}
 		$onFrameChange() {
-			let dayPicker = this.$view.Q('day-picker', 1);
-			this.$view.Q('#value', 1).innerHTML =
-				this.$frame.year + '-' +
-				this.$frame.month.padStart(2, '0') + '-' +
-				this.$frame.day.padStart(2, '0')
+			let date = this.A.value ?? new Date().toISOString().slice(0, 10);
+			this.A.value = date;
+			this.$view.Q('#value', 1).innerHTML = date;
+			let [year, month, day] = date.split('-');
+			let dayPicker = this.$view.Q('day-picker', 1).A;
+			dayPicker.year = year;
+			dayPicker.month = month;
+			dayPicker.day = day;
+			this.$view.Q('month-picker', 1).A.month = month;
+			this.$view.Q('year-picker', 1).A.year = year;
 		}
 	}
 window.customElements.define('date-picker', date_picker)

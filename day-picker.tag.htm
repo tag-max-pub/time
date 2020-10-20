@@ -17,11 +17,12 @@
 <script>
 	class {
 		$onFrameChange() {
-			console.log('days')
-			let date = new Date(this.$frame.year, this.$frame.month - 1, 1)
-			console.log('date', date, date.getDay());
+			// console.log('update day-picker', JSON.stringify(this.A))
+			let date = new Date(this.A.year, this.A.month - 1, 1);
+			if (!date.getFullYear()) return;
+			// console.log('date', date, date.getDay());
 			date.setDate(date.getDate() - date.getDay());
-			console.log('date', date, date.getDay());
+			// console.log('date', date, date.getDay());
 			let month = NODE('month');
 			for (let i = 0; i < 6; i++) {
 				let week = NODE('week');
@@ -30,34 +31,34 @@
 					let day = NODE('day', {
 						month: date.getMonth() + 1,
 						day: date.getDate(),
-						sameMonth: date.getMonth() + 1 == this.$frame.month ? 'same' : 'other',
+						sameMonth: date.getMonth() + 1 == this.A.month ? 'same' : 'other',
 						weekday: date.toLocaleDateString('en-us', { weekday: 'short' }).toLowerCase(),
-						selected: this.$frame.day == date.getDate() && date.getMonth() + 1 == this.$frame.month ? 'selected' : '',
+						selected: this.A.day == date.getDate() && date.getMonth() + 1 == this.A.month ? 'selected' : '',
 					});
 					date.setDate(date.getDate() + 1);
 					week.appendChild(day);
 				}
 				month.appendChild(week);
-				if (date.getMonth() + 1 != this.$frame.month) break;
+				if (date.getMonth() + 1 != this.A.month) break;
 			}
-			console.log('moo', month)
+			// console.log('moo', month)
 			this.$data = month;
 			// let months = Array(3).fill(1).map((x, i) =>
 			// 	NODE('set', {}, Array(4).fill(1).map((x, j) =>
 			// 		NODE('month', {
 			// 			number: i * 4 + (j + 1),
-			// 			class: this.$frame.value == i * 4 + (j + 1) ? 'selected' : '',
+			// 			class: this.A.value == i * 4 + (j + 1) ? 'selected' : '',
 			// 			name: new Date(2000, i * 4 + (j + 1) - 1, 11).toLocaleString('default', { month: 'short' })
 			// 		}))))
 			// console.log('months', months)
 			// this.$data = NODE('months', {}, months)
 		}
 		select(node) {
-			this.$frame.day = node.getAttribute('day');
-			this.$event('change');
+			this.A.day = node.getAttribute('day').padStart(2, '0');
+			this.$event('change', { day: this.A.day });
 		}
 		get value() {
-			return this.$frame.value;
+			return this.A.value;
 		}
 	}
 </script>
@@ -66,9 +67,9 @@
 <style>
 	:host {
 		display: inline-block;
-		font-size: 20px;
+		font-size: 16px;
 		/* font-family: "Lucida Console"; */
-		font-family: Helvetica, sans-serif;
+		font-family: publicSans, Helvetica, sans-serif;
 
 	}
 
@@ -83,12 +84,13 @@
 		cursor: pointer;
 	}
 
-	.other {
-		color: silver;
-	}
 
 	.sat,
 	.sun {
+		color: gray;
+	}
+
+	.other {
 		color: silver;
 	}
 

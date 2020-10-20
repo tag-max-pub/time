@@ -18,6 +18,7 @@
 	class {
 		$onFrameChange() {
 			// console.log('monthsss')
+			if (!this.A.month) return;
 			let year = NODE('year');
 			for (let i = 0; i < 3; i++) {
 				let set = NODE('set');
@@ -25,7 +26,7 @@
 					let number = i * 4 + (j + 1);
 					let month = NODE('month', {
 						month: number,
-						selected: this.$frame.month == number ? 'selected' : '',
+						selected: this.A.month * 1 == number ? 'selected' : '',
 						name: new Date(2000, number - 1, 11).toLocaleString('default', { month: 'short' })
 					});
 					set.appendChild(month);
@@ -37,18 +38,18 @@
 			// 	NODE('set', {}, Array(4).fill(1).map((x, j) =>
 			// 		NODE('month', {
 			// 			number: i * 4 + (j + 1),
-			// 			class: this.$frame.value == i * 4 + (j + 1) ? 'selected' : '',
+			// 			class: this.A.value == i * 4 + (j + 1) ? 'selected' : '',
 			// 			name: new Date(2000, i * 4 + (j + 1) - 1, 11).toLocaleString('default', { month: 'short' })
 			// 		}))))
 			// console.log('months', months)
 			// this.$data = NODE('months', {}, months)
 		}
 		select(node) {
-			this.$frame.month = node.getAttribute('month');
-			this.$event('change');
+			this.A.month = node.getAttribute('month').padStart(2,'0');
+			this.$event('change', { month: this.A.month });
 		}
 		get value() {
-			return this.$frame.month;
+			return this.A.month;
 		}
 	}
 </script>
@@ -60,11 +61,13 @@
 		font-size: 20px;
 		/* font-family: "Lucida Console"; */
 		/* font-weight: 100; */
-		font-family: Helvetica, sans-serif;
+		font-family: publicSans, Helvetica, sans-serif;
 	}
-	table{
+
+	table {
 		width: 100%;
 	}
+
 	td {
 		padding: .2rem;
 		text-align: center;

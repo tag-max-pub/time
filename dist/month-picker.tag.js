@@ -46,9 +46,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		font-size: 20px;
 		/* font-family: "Lucida Console"; */
 		/* font-weight: 100; */
-		font-family: Helvetica, sans-serif;
+		font-family: publicSans, Helvetica, sans-serif;
 	}
-	table{
+	table {
 		width: 100%;
 	}
 	td {
@@ -62,6 +62,20 @@ STYLE.appendChild(document.createTextNode(`:host {
 		background: silver;
 		cursor: pointer;
 	}`));
+function ATTR() {  // attributes
+	return new Proxy(
+		Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
+		{
+			set: (target, key, value) => {
+				if (this.getAttribute(key) != value)
+					this.setAttribute(key, value);
+				return Reflect.set(target, key, value);
+			}
+		}
+	)
+}
+Object.defineProperty(Element.prototype, "A", { get: ATTR, configurable:true });
+Object.defineProperty(DocumentFragment.prototype, "A", { get: ATTR, configurable:true });
 class WebTag extends HTMLElement {
 	constructor() {
 		super();
@@ -80,7 +94,7 @@ class WebTag extends HTMLElement {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
 				this.$onFrameChange(
-					this.att,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
+					this.A,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
 					Object.fromEntries(events.map(e => [e.attributeName, e.oldValue]))
 				);
 			} else {
@@ -131,17 +145,6 @@ class WebTag extends HTMLElement {
 			});
 		});
 	}
-	get $frame() {  // attributes
-		return new Proxy(
-			Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
-			{
-				set: (target, key, value) => {
-					this.setAttribute(key, value);
-					return Reflect.set(target, key, value);
-				}
-			}
-		)
-	}
 	$event(name, options) {
 		this.dispatchEvent(new CustomEvent(name, {
 			bubbles: true,
@@ -153,6 +156,7 @@ class WebTag extends HTMLElement {
 };
 class month_picker extends WebTag {
 		$onFrameChange() {
+			if (!this.A.month) return;
 			let year = NODE('year');
 			for (let i = 0; i < 3; i++) {
 				let set = NODE('set');
@@ -160,7 +164,7 @@ class month_picker extends WebTag {
 					let number = i * 4 + (j + 1);
 					let month = NODE('month', {
 						month: number,
-						selected: this.$frame.month == number ? 'selected' : '',
+						selected: this.A.month * 1 == number ? 'selected' : '',
 						name: new Date(2000, number - 1, 11).toLocaleString('default', { month: 'short' })
 					});
 					set.appendChild(month);
@@ -170,11 +174,11 @@ class month_picker extends WebTag {
 			this.$data = year;
 		}
 		select(node) {
-			this.$frame.month = node.getAttribute('month');
-			this.$event('change');
+			this.A.month = node.getAttribute('month').padStart(2,'0');
+			this.$event('change', { month: this.A.month });
 		}
 		get value() {
-			return this.$frame.month;
+			return this.A.month;
 		}
 	}
 window.customElements.define('month-picker', month_picker)

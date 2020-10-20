@@ -1,0 +1,83 @@
+<htm>
+	<main on-tap=''></main>
+</htm>
+
+<script>
+	class {
+		$onFrameChange() {
+			// console.log('monthsss')
+			let now = this.A.year;
+			if (!now) return;
+			let years = NODE('main');
+			for (let i = 1900; i < 2050; i++) {
+				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, i + ''));
+			}
+			this.$view = years;
+			this.$view.Q('.selected', 1)?.scrollIntoView({ inline: 'center' }); // , behavior:'smooth'
+		}
+		select(node) {
+			this.A.year = node.getAttribute('year');
+			this.$event('change', { year: this.A.year });
+		}
+		get value() {
+			return this.A.month;
+		}
+	}
+</script>
+
+
+<style>
+	:host {
+		display: inline-block;
+		font-size: 16px;
+		/* font-family: "Lucida Console"; */
+		/* font-weight: 100; */
+		font-family: publicSans, Helvetica, sans-serif;
+		width: 220px;
+		/* scrollbar-width: none; */
+	}
+
+
+	main {
+		overflow-x: scroll;
+		scrollbar-width: none;
+		/* overflow: -moz-scrollbars-none; */
+		/* scrollbar-height: none; */
+		/* overflow: hidden; */
+		width: 100%;
+		white-space: nowrap;
+	}
+
+	span {
+		display: inline-block;
+		padding: .3rem;
+	}
+
+	span:hover {
+		background: #eee;
+		cursor: pointer;
+	}
+
+	.selected {
+		background: #ddd;
+	}
+
+
+	::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* 
+	::-webkit-scrollbar {
+		width: 5px;
+		height: 0px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: silver;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: gray;
+	} */
+</style>

@@ -43,9 +43,9 @@ const XSL = XSLT(`<?xml version="1.0"?>
 let STYLE = document.createElement('style');
 STYLE.appendChild(document.createTextNode(`:host {
 		display: inline-block;
-		font-size: 20px;
+		font-size: 16px;
 		/* font-family: "Lucida Console"; */
-		font-family: Helvetica, sans-serif;
+		font-family: publicSans, Helvetica, sans-serif;
 	}
 	td {
 		padding: .3rem;
@@ -55,16 +55,30 @@ STYLE.appendChild(document.createTextNode(`:host {
 		background: #eee;
 		cursor: pointer;
 	}
-	.other {
-		color: silver;
-	}
 	.sat,
 	.sun {
+		color: gray;
+	}
+	.other {
 		color: silver;
 	}
 	.selected {
 		background: #ddd;
 	}`));
+function ATTR() {  // attributes
+	return new Proxy(
+		Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
+		{
+			set: (target, key, value) => {
+				if (this.getAttribute(key) != value)
+					this.setAttribute(key, value);
+				return Reflect.set(target, key, value);
+			}
+		}
+	)
+}
+Object.defineProperty(Element.prototype, "A", { get: ATTR, configurable:true });
+Object.defineProperty(DocumentFragment.prototype, "A", { get: ATTR, configurable:true });
 class WebTag extends HTMLElement {
 	constructor() {
 		super();
@@ -83,7 +97,7 @@ class WebTag extends HTMLElement {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
 				this.$onFrameChange(
-					this.att,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
+					this.A,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
 					Object.fromEntries(events.map(e => [e.attributeName, e.oldValue]))
 				);
 			} else {
@@ -134,17 +148,6 @@ class WebTag extends HTMLElement {
 			});
 		});
 	}
-	get $frame() {  // attributes
-		return new Proxy(
-			Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
-			{
-				set: (target, key, value) => {
-					this.setAttribute(key, value);
-					return Reflect.set(target, key, value);
-				}
-			}
-		)
-	}
 	$event(name, options) {
 		this.dispatchEvent(new CustomEvent(name, {
 			bubbles: true,
@@ -156,11 +159,9 @@ class WebTag extends HTMLElement {
 };
 class day_picker extends WebTag {
 		$onFrameChange() {
-			console.log('days')
-			let date = new Date(this.$frame.year, this.$frame.month - 1, 1)
-			console.log('date', date, date.getDay());
+			let date = new Date(this.A.year, this.A.month - 1, 1);
+			if (!date.getFullYear()) return;
 			date.setDate(date.getDate() - date.getDay());
-			console.log('date', date, date.getDay());
 			let month = NODE('month');
 			for (let i = 0; i < 6; i++) {
 				let week = NODE('week');
@@ -168,25 +169,24 @@ class day_picker extends WebTag {
 					let day = NODE('day', {
 						month: date.getMonth() + 1,
 						day: date.getDate(),
-						sameMonth: date.getMonth() + 1 == this.$frame.month ? 'same' : 'other',
+						sameMonth: date.getMonth() + 1 == this.A.month ? 'same' : 'other',
 						weekday: date.toLocaleDateString('en-us', { weekday: 'short' }).toLowerCase(),
-						selected: this.$frame.day == date.getDate() && date.getMonth() + 1 == this.$frame.month ? 'selected' : '',
+						selected: this.A.day == date.getDate() && date.getMonth() + 1 == this.A.month ? 'selected' : '',
 					});
 					date.setDate(date.getDate() + 1);
 					week.appendChild(day);
 				}
 				month.appendChild(week);
-				if (date.getMonth() + 1 != this.$frame.month) break;
+				if (date.getMonth() + 1 != this.A.month) break;
 			}
-			console.log('moo', month)
 			this.$data = month;
 		}
 		select(node) {
-			this.$frame.day = node.getAttribute('day');
-			this.$event('change');
+			this.A.day = node.getAttribute('day').padStart(2, '0');
+			this.$event('change', { day: this.A.day });
 		}
 		get value() {
-			return this.$frame.value;
+			return this.A.value;
 		}
 	}
 window.customElements.define('day-picker', day_picker)
