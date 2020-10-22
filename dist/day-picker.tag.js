@@ -53,16 +53,20 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	td:hover {
 		background: #eee;
+		background: #444;
 		cursor: pointer;
 	}
 	.sat,
 	.sun {
-		color: gray;
+		color: #ccc;
+		color: #aaa;
 	}
 	.other {
-		color: silver;
+		color: #999;
+		color: #777;
 	}
 	.selected {
+		background: #ddd;
 		background: #555;
 	}`));
 function ATTR() {  // attributes

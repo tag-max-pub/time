@@ -57,6 +57,7 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	.selected {
 		background: #ddd;
+		background: #555;
 	}
 	td:hover {
 		background: silver;

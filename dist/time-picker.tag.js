@@ -58,7 +58,7 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	td {
 		/* display: inline-block; */
-		padding: .2rem;
+		padding: .3rem;
 		text-align: center;
 	}
 	.night {

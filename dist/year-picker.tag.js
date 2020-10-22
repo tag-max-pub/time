@@ -48,6 +48,7 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	.selected {
 		background: #ddd;
+		background: #555;
 	}
 	::-webkit-scrollbar {
 		display: none;
