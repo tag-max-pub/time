@@ -63,7 +63,7 @@ STYLE.appendChild(document.createTextNode(`:host {
 		color: silver;
 	}
 	.selected {
-		background: #ddd;
+		background: #555;
 	}`));
 function ATTR() {  // attributes
 	return new Proxy(

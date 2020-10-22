@@ -147,8 +147,7 @@ class WebTag extends HTMLElement {
 };
 class year_picker extends WebTag {
 		$onFrameChange() {
-			let now = this.A.year;
-			if (!now) return;
+			let now = this.A.year ?? 2020;
 			let years = NODE('main');
 			for (let i = 1900; i < 2050; i++) {
 				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, i + ''));

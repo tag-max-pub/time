@@ -1,0 +1,147 @@
+<htm>
+	<div id='value'></div>
+	<table on-tap=''>
+		<tr>
+			<td id='hours'>
+				<!-- <table>
+					<tr>
+						<td>00</td>
+						<td>01</td>
+						<td>02</td>
+						<td>03</td>
+					</tr>
+				</table> -->
+			</td>
+			<td id='minutes'>
+
+			</td>
+		</tr>
+
+	</table>
+</htm>
+
+<style>
+	:host {
+		display: inline-block;
+		border: 1px solid #ddd;
+	}
+
+	#value {
+		padding: .5rem 0;
+		font-size: 30px;
+		font-weight: 300;
+		/* font-family: "Lucida Console"; */
+		font-family: publicSans, Helvetica, sans-serif;
+		text-align: center;
+		vertical-align: middle;
+		border-bottom: 1px solid #ddd
+	}
+
+	table {
+		/* width: 300px; */
+	}
+
+	#hours {
+		border-right: 1px solid #ddd;
+	}
+
+	td {
+		/* display: inline-block; */
+		padding: .2rem;
+		text-align: center;
+	}
+
+	.night {
+		color: gray;
+	}
+
+	.evening {
+		color: gray;
+	}
+
+	#minutes td {
+		color: silver;
+	}
+
+	#minutes td.quarter {
+		/* color: white; */
+	}
+
+	.selected {
+		background: #555;
+	}
+
+	td td:hover {
+		cursor: pointer;
+		background: #444;
+	}
+</style>
+
+<script>
+	function pad(x) { return (x + '').padStart(2, '0') }
+
+
+	class {
+		$onReady() {
+			this.buildHours();
+			this.buildMinutes();
+		}
+
+		buildHours() {
+			let hours = '';
+			for (let i = 0; i < 24; i++) {
+				hours += `<td on-tap='setHour'  class='${i < 8 ? 'night' : ''} ${i > 19 ? 'evening' : ''}'>${(i + '').padStart(1, '0')}</td>`;
+				if (i % 4 == 3) hours += '</tr>\n<tr>'
+			}
+			// console.log(hours)
+			this.$view.Q('#hours', 1).innerHTML = '<table><tr>' + hours + '</tr></table>';
+		}
+		buildMinutes() {
+			let minutes = '';
+			for (let i = 0; i < 60; i += 5) {
+				minutes += `<td on-tap='setMinute' class='${i % 15 == 0 ? 'quarter' : ''} '>${(i + '').padStart(2, '0')}</td>`;
+				if (i % 10 == 5) minutes += '</tr>\n<tr>'
+			}
+			this.$view.Q('#minutes', 1).innerHTML = '<table><tr>' + minutes + '</tr></table>';
+		}
+
+		// setValue() {
+		// 	this.$view.Q('#value', 1).innerHTML = pad(hour) + ':' + pad(minute);
+		// }
+
+		$onFrameChange() {
+			let [hour, minute] = (this.getAttribute('value') ?? ':').split(':');
+			if (!hour) hour = new Date().getHours();
+			if (!minute) minute = new Date().getMinutes();
+			if (minute % 5 < 3) minute -= minute % 5;
+			else minute += (5 - minute % 5);
+			let value = pad(hour) + ':' + pad(minute)
+			if (this.getAttribute('value') != value) return this.setAttribute('value', value);
+			this.$view.Q('#value', 1).innerHTML = value;
+			this.$view.Q('#hours td').map(x => x.innerHTML * 1 == hour * 1 ? x.classList.add('selected') : x.classList.remove('selected'))
+			this.$view.Q('#minutes td').map(x => x.innerHTML * 1 == minute * 1 ? x.classList.add('selected') : x.classList.remove('selected'))
+			// this.buildHours();
+			// this.buildMinutes();
+		}
+
+		get hour() {
+			return this.getAttribute('value').split(':')[0];
+		}
+		set hour(v) {
+			this.setAttribute('value', pad(v) + ':' + this.minute)
+		}
+		get minute() {
+			return this.getAttribute('value').split(':')[1];
+		}
+		set minute(v) {
+			this.setAttribute('value', this.hour + ':' + pad(v))
+		}
+		setHour(node) {
+			this.hour = node.innerHTML;
+		}
+		setMinute(node) {
+			this.minute = node.innerHTML;
+		}
+
+	}
+</script>
