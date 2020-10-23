@@ -30,25 +30,26 @@ STYLE.appendChild(document.createTextNode(`:host {
 		/* scrollbar-width: none; */
 	}
 	main {
-		overflow-x: scroll;
+		overflow: scroll;
 		scrollbar-width: none;
 		/* overflow: -moz-scrollbars-none; */
 		/* scrollbar-height: none; */
 		/* overflow: hidden; */
 		width: 100%;
+		/* height: 3em; */
 		white-space: nowrap;
 	}
 	span {
 		display: inline-block;
-		padding: .3rem;
+		padding: .2rem;
+		margin: 1px;
 	}
 	span:hover {
-		background: #eee;
+		background: var(--color4);
 		cursor: pointer;
 	}
 	.selected {
-		background: #ddd;
-		background: #555;
+		background: var(--color4)
 	}
 	::-webkit-scrollbar {
 		display: none;
@@ -98,6 +99,7 @@ class WebTag extends HTMLElement {
 		this.$attachMutationObservers();
 		this.$attachEventListeners();
 		this.$onFrameChange();  //: onFrameChange
+		this.$onReady(); //: onReady
 	}
 	$attachMutationObservers() {
 		this.modelObserver = new MutationObserver(events => {
@@ -147,14 +149,25 @@ class WebTag extends HTMLElement {
 	}
 };
 class year_picker extends WebTag {
+		$onReady() {
+			console.log('add handler', this.$view.Q('main', 1))
+		}
 		$onFrameChange() {
 			let now = this.A.year ?? 2020;
 			let years = NODE('main');
 			for (let i = 1900; i < 2050; i++) {
-				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, i + ''));
+				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, [i.toString()]));
 			}
 			this.$view = years;
-			this.$view.Q('.selected', 1)?.scrollIntoView({ inline: 'center' }); // , behavior:'smooth'
+			years.addEventListener('wheel', event => {
+				let delta = event.deltaX || event.deltaY;
+				event.preventDefault();
+				years.scrollLeft += delta;
+			})
+			console.log('sel', this.$view.Q('.selected', 1))
+			setTimeout(() =>
+				this.$view.Q('.selected', 1)?.scrollIntoView({ block: 'nearest', inline: 'center' }) // , behavior:'smooth'
+				, 50);
 		}
 		select(node) {
 			this.A.year = node.getAttribute('year');

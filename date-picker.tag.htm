@@ -1,10 +1,10 @@
 <htm>
 	<div id='value'></div>
-	<hr />
+	<!-- <hr /> -->
 	<year-picker></year-picker>
-	<hr />
+	<!-- <hr /> -->
 	<month-picker></month-picker>
-	<hr />
+	<!-- <hr /> -->
 	<day-picker></day-picker>
 </htm>
 
@@ -58,18 +58,36 @@
 			// this.A.month.padStart(2, '0') + '-' +
 			// this.A.day.padStart(2, '0')
 		}
+
+		get value() {
+			return this.getAttribute('value')
+		}
 	}
 </script>
 
 <style>
 	:host {
 		display: inline-block;
-		border: 1px solid #ddd;
+		border: 1px solid var(--color4);
 		/* width: 300px; */
+		--color1: #fff;
+		--color2: #aaa;
+		--color3: #777;
+		--color4: #444;
+		width: 13rem;
+
+	}
+
+	htm>* {
+		display: block;
+		border-bottom: 1px solid var(--color4);
+		width: 100%;
+		padding: .5rem;
+		box-sizing: border-box;
 	}
 
 	#value {
-		margin-top: .5rem;
+		/* margin-top: .5rem; */
 		font-size: 30px;
 		font-weight: 300;
 		/* font-family: "Lucida Console"; */

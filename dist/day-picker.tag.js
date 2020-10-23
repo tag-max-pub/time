@@ -51,23 +51,19 @@ STYLE.appendChild(document.createTextNode(`:host {
 		padding: .3rem;
 		text-align: right;
 	}
-	td:hover {
-		background: #eee;
-		background: #444;
-		cursor: pointer;
-	}
 	.sat,
 	.sun {
-		color: #ccc;
-		color: #aaa;
+		color: var(--color2);
 	}
 	.other {
-		color: #999;
-		color: #777;
+		color: var(--color3);
+	}
+	td:hover {
+		background: var(--color4);
+		cursor: pointer;
 	}
 	.selected {
-		background: #ddd;
-		background: #555;
+		background: var(--color4);
 	}`));
 function ATTR() {  // attributes
 	return new Proxy(

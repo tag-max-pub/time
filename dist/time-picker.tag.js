@@ -38,7 +38,12 @@ HTML.innerHTML = `<div id='value'></div>
 let STYLE = document.createElement('style');
 STYLE.appendChild(document.createTextNode(`:host {
 		display: inline-block;
-		border: 1px solid #ddd;
+		--color1: #fff;
+		--color2: #aaa;
+		--color3: #777;
+		--color4: #444;
+		width: 13rem;
+		border: 1px solid var(--color4)
 	}
 	#value {
 		padding: .5rem 0;
@@ -48,13 +53,14 @@ STYLE.appendChild(document.createTextNode(`:host {
 		font-family: publicSans, Helvetica, sans-serif;
 		text-align: center;
 		vertical-align: middle;
-		border-bottom: 1px solid #ddd
+		border-bottom: 1px solid var(--color4)
 	}
 	table {
+		width: 100%;
 		/* width: 300px; */
 	}
 	#hours {
-		border-right: 1px solid #ddd;
+		border-right: 1px solid var(--color4);
 	}
 	td {
 		/* display: inline-block; */
@@ -74,11 +80,11 @@ STYLE.appendChild(document.createTextNode(`:host {
 		/* color: white; */
 	}
 	.selected {
-		background: #555;
+		background: var(--color4);
 	}
 	td td:hover {
 		cursor: pointer;
-		background: #444;
+		background: var(--color4);
 	}`));
 function QQ(query, i) {
 	let result = Array.from(this.querySelectorAll(query));
@@ -140,6 +146,14 @@ class WebTag extends HTMLElement {
 			HTML = new DOMParser().parseFromString(HTML, 'text/html').firstChild
 		this.$view.appendChild(HTML);
 	}
+	$event(name, options) {
+		this.dispatchEvent(new CustomEvent(name, {
+			bubbles: true,
+			composed: true,
+			cancelable: true,
+			detail: options
+		}));
+	}
 };
 function pad(x) { return (x + '').padStart(2, '0') }
 	class time_picker extends WebTag {
@@ -175,23 +189,28 @@ function pad(x) { return (x + '').padStart(2, '0') }
 			this.$view.Q('#hours td').map(x => x.innerHTML * 1 == hour * 1 ? x.classList.add('selected') : x.classList.remove('selected'))
 			this.$view.Q('#minutes td').map(x => x.innerHTML * 1 == minute * 1 ? x.classList.add('selected') : x.classList.remove('selected'))
 		}
+		get value() {
+			return this.getAttribute('value')
+		}
 		get hour() {
-			return this.getAttribute('value').split(':')[0];
+			return this.value.split(':')[0];
 		}
 		set hour(v) {
 			this.setAttribute('value', pad(v) + ':' + this.minute)
 		}
 		get minute() {
-			return this.getAttribute('value').split(':')[1];
+			return this.value.split(':')[1];
 		}
 		set minute(v) {
 			this.setAttribute('value', this.hour + ':' + pad(v))
 		}
 		setHour(node) {
 			this.hour = node.innerHTML;
+			this.$event('change', { time: this.value })
 		}
 		setMinute(node) {
 			this.minute = node.innerHTML;
+			this.$event('change', { time: this.value })
 		}
 	}
 window.customElements.define('time-picker', time_picker)

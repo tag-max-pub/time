@@ -23,7 +23,12 @@
 <style>
 	:host {
 		display: inline-block;
-		border: 1px solid #ddd;
+		--color1: #fff;
+		--color2: #aaa;
+		--color3: #777;
+		--color4: #444;
+		width: 13rem;
+		border: 1px solid var(--color4)
 	}
 
 	#value {
@@ -34,15 +39,16 @@
 		font-family: publicSans, Helvetica, sans-serif;
 		text-align: center;
 		vertical-align: middle;
-		border-bottom: 1px solid #ddd
+		border-bottom: 1px solid var(--color4)
 	}
 
 	table {
+		width: 100%;
 		/* width: 300px; */
 	}
 
 	#hours {
-		border-right: 1px solid #ddd;
+		border-right: 1px solid var(--color4);
 	}
 
 	td {
@@ -68,12 +74,12 @@
 	}
 
 	.selected {
-		background: #555;
+		background: var(--color4);
 	}
 
 	td td:hover {
 		cursor: pointer;
-		background: #444;
+		background: var(--color4);
 	}
 </style>
 
@@ -124,23 +130,28 @@
 			// this.buildMinutes();
 		}
 
+		get value() {
+			return this.getAttribute('value')
+		}
 		get hour() {
-			return this.getAttribute('value').split(':')[0];
+			return this.value.split(':')[0];
 		}
 		set hour(v) {
 			this.setAttribute('value', pad(v) + ':' + this.minute)
 		}
 		get minute() {
-			return this.getAttribute('value').split(':')[1];
+			return this.value.split(':')[1];
 		}
 		set minute(v) {
 			this.setAttribute('value', this.hour + ':' + pad(v))
 		}
 		setHour(node) {
 			this.hour = node.innerHTML;
+			this.$event('change', { time: this.value })
 		}
 		setMinute(node) {
 			this.minute = node.innerHTML;
+			this.$event('change', { time: this.value })
 		}
 
 	}

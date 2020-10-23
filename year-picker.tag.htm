@@ -4,16 +4,29 @@
 
 <script>
 	class {
+		$onReady() {
+			console.log('add handler', this.$view.Q('main', 1))
+
+		}
 		$onFrameChange() {
 			// console.log('monthsss')
 			let now = this.A.year ?? 2020;
 			// if (!now) return;
 			let years = NODE('main');
 			for (let i = 1900; i < 2050; i++) {
-				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, i + ''));
+				years.appendChild(NODE('span', { year: i, class: i == now ? 'selected' : '', 'on-tap': 'select' }, [i.toString()]));
 			}
 			this.$view = years;
-			this.$view.Q('.selected', 1)?.scrollIntoView({ inline: 'center' }); // , behavior:'smooth'
+			years.addEventListener('wheel', event => {
+				let delta = event.deltaX || event.deltaY;
+				// console.log('scroll',event,delta)
+				event.preventDefault();
+				years.scrollLeft += delta;
+			})
+			console.log('sel', this.$view.Q('.selected', 1))
+			setTimeout(() =>
+				this.$view.Q('.selected', 1)?.scrollIntoView({ block: 'nearest', inline: 'center' }) // , behavior:'smooth'
+				, 50);
 		}
 		select(node) {
 			this.A.year = node.getAttribute('year');
@@ -39,29 +52,30 @@
 
 
 	main {
-		overflow-x: scroll;
+		overflow: scroll;
 		scrollbar-width: none;
 		/* overflow: -moz-scrollbars-none; */
 		/* scrollbar-height: none; */
 		/* overflow: hidden; */
 		width: 100%;
+
+		/* height: 3em; */
 		white-space: nowrap;
 	}
 
 	span {
 		display: inline-block;
-		padding: .3rem;
+		padding: .2rem;
+		margin: 1px;
 	}
 
 	span:hover {
-		background: #eee;
+		background: var(--color4);
 		cursor: pointer;
 	}
 
 	.selected {
-		background: #ddd;
-		background: #555;
-
+		background: var(--color4)
 	}
 
 

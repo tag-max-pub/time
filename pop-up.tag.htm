@@ -1,0 +1,53 @@
+<htm>
+	<!-- <div on-tap=''></div> -->
+	<!-- <div id='back'></div> -->
+	<slot></slot>
+</htm>
+
+<script>
+	class {
+		$onReady() {
+			this.hidden = true;
+			// let popup = document.Q('')
+			window.addEventListener('mousedown', event => {
+				// console.log(event.target, event.target.closest('pop-up'), event.composedPath())
+				// if (event.target.closest('pop-up') != this.clone)
+				// this.close();
+				if (this.clone && !event.composedPath().includes(this.clone))
+					this.close();
+			})
+		}
+		open(anchor) {
+			console.log('copy to root')
+			let dim = anchor?.getBoundingClientRect()
+			console.log('dim', dim);
+			// this.clone = document.createElement('pop-up')
+			// this.clone.innerHTML = this.innerHTML;
+			// this.clone = `<pop-up>${this.innerHTML}</pop-up>`;
+
+			// this.clone = this.cloneNode(true);
+			// document.body.appendChild(this.clone)
+			this.clone = this;
+			console.log('clone', this.clone)
+			this.clone.style.top = dim.y + 'px';
+			this.clone.style.left = dim.x + dim.width + 'px';
+			this.clone.hidden = false;
+
+			console.log(document.body)
+		}
+
+		close() {
+			// this.clone.remove();
+			this.clone.hidden = true;
+			this.clone = null;
+		}
+	}
+</script>
+
+<style>
+	:host {
+		position: absolute;
+		/* padding: 1rem; */
+		background: #333;
+	}
+</style>

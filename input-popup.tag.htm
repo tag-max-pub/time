@@ -1,0 +1,84 @@
+<htm>
+	<span id='value' on-tap='open'></span>
+	<pop-up>
+		<table>
+			<tr>
+				<td colspan='2'>
+					<slot></slot>
+				</td>
+			</tr>
+			<tr>
+				<td on-tap='save'>save</td>
+				<td on-tap='cancel'>cancel</td>
+			</tr>
+		</table>
+	</pop-up>
+</htm>
+
+<script>
+	import './pop-up.tag.js';
+	class {
+		$onReady() {
+			this.popup = this.$view.Q('pop-up', 1);
+			this.$view.addEventListener('change', event => {
+				// console.log('change', event.detail);
+				// this.selected = event.detail.time
+				// this.$view.Q('#value', 1).innerHTML = event.detail.time;
+				event.stopPropagation();
+			})
+			this.$view.Q('#value')[0].innerHTML = this.getAttribute('placeholder')
+		}
+		open() {
+			console.log('open teim')
+			this.popup.open(this.$view.Q('#value', 1));
+		}
+
+		set value(v) {
+			this.setAttribute('value', v);
+			this.$view.Q('#value', 1).innerHTML = v;
+		}
+		save() {
+			let picker = this.children[0];
+			this.value = picker.value;
+			// console.log(this.children[0])
+			// this.value = this.$view.Q('time-picker', 1).value;
+			// this.value = this.selected;
+			this.$event('change');
+			this.popup.close();
+			// this.$event('cancel');
+		}
+		cancel() {
+			this.popup.close();
+			// this.$event('cancel');
+		}
+	}
+</script>
+
+<style>
+	:host {
+		display: inline-block;
+
+	}
+
+	:host(:hover) {
+		color: red;
+		cursor: pointer;
+	}
+
+	td[on-tap] {
+		background: #444;
+		/* color: white; */
+		font-size: 20px;
+		font-weight: 100;
+		font-family: publicSans;
+		text-align: center;
+		width: 50%;
+		padding: .5rem;
+		/* border: #aaa; */
+	}
+
+	td[on-tap]:hover {
+		background: #555;
+		cursor: pointer;
+	}
+</style>

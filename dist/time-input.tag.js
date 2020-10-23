@@ -1,4 +1,4 @@
-console.log('date-picker', import.meta.url);
+console.log('time-input', import.meta.url);
 function NODE(name, attributes = {}, children = []) {
 	let node = document.createElement(name);
 	for (let key in attributes)
@@ -18,47 +18,42 @@ class XML {
 XMLDocument.prototype.stringify = XML.stringify
 Element.prototype.stringify = XML.stringify
 const HTML = document.createElement('template');
-HTML.innerHTML = `<div id='value'></div>
-	<!-- <hr /> -->
-	<year-picker></year-picker>
-	<!-- <hr /> -->
-	<month-picker></month-picker>
-	<!-- <hr /> -->
-	<day-picker></day-picker>`;
+HTML.innerHTML = `<span id='value' on-tap='open'>time</span>
+	<pop-up>
+		<table>
+			<tr>
+				<td colspan='2'>
+					<time-picker></time-picker>
+				</td>
+			</tr>
+			<tr>
+				<td on-tap='save'>save</td>
+				<td on-tap='cancel'>cancel</td>
+			</tr>
+		</table>
+	</pop-up>`;
 let STYLE = document.createElement('style');
 STYLE.appendChild(document.createTextNode(`:host {
 		display: inline-block;
-		border: 1px solid var(--color4);
-		/* width: 300px; */
-		--color1: #fff;
-		--color2: #aaa;
-		--color3: #777;
-		--color4: #444;
-		width: 13rem;
 	}
-	htm>* {
-		display: block;
-		border-bottom: 1px solid var(--color4);
-		width: 100%;
-		padding: .5rem;
-		box-sizing: border-box;
+	:host(:hover) {
+		color: red;
+		cursor: pointer;
 	}
-	#value {
-		/* margin-top: .5rem; */
-		font-size: 30px;
-		font-weight: 300;
-		/* font-family: "Lucida Console"; */
-		font-family: publicSans, Helvetica, sans-serif;
+	td[on-tap] {
+		background: #444;
+		/* color: white; */
+		font-size: 20px;
+		font-weight: 100;
+		font-family: publicSans;
 		text-align: center;
-		vertical-align: middle;
+		width: 50%;
+		padding: .5rem;
+		/* border: #aaa; */
 	}
-	month-picker {
-		width: 100%;
-	}
-	hr {
-		border: none;
-		height: 1px;
-		background-color: #ddd;
+	td[on-tap]:hover {
+		background: #555;
+		cursor: pointer;
 	}`));
 function QQ(query, i) {
 	let result = Array.from(this.querySelectorAll(query));
@@ -67,20 +62,6 @@ function QQ(query, i) {
 Element.prototype.Q = QQ
 ShadowRoot.prototype.Q = QQ
 DocumentFragment.prototype.Q = QQ
-function ATTR() {  // attributes
-	return new Proxy(
-		Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
-		{
-			set: (target, key, value) => {
-				if (this.getAttribute(key) != value)
-					this.setAttribute(key, value);
-				return Reflect.set(target, key, value);
-			}
-		}
-	)
-}
-Object.defineProperty(Element.prototype, "A", { get: ATTR, configurable:true });
-Object.defineProperty(DocumentFragment.prototype, "A", { get: ATTR, configurable:true });
 class WebTag extends HTMLElement {
 	constructor() {
 		super();
@@ -93,16 +74,11 @@ class WebTag extends HTMLElement {
 		this.$applyHTML(); //: HTML
 		this.$attachMutationObservers();
 		this.$attachEventListeners();
-		this.$onFrameChange();  //: onFrameChange
 		this.$onReady(); //: onReady
 	}
 	$attachMutationObservers() {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
-				this.$onFrameChange(
-					this.A,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
-					Object.fromEntries(events.map(e => [e.attributeName, e.oldValue]))
-				);
 			} else {
 			}
 		}).observe(this, { attributes: true, characterData: true, attributeOldValue: true, childList: true, subtree: true });
@@ -116,6 +92,7 @@ class WebTag extends HTMLElement {
 			}
 			catch { }
 		}
+		this.addEventListener('click', e => action(e, 'on-tap')); //: onTap
 	}
 	$applyHTML() {
 		this.$view = HTML.content.cloneNode(true)
@@ -133,36 +110,38 @@ class WebTag extends HTMLElement {
 			HTML = new DOMParser().parseFromString(HTML, 'text/html').firstChild
 		this.$view.appendChild(HTML);
 	}
+	$event(name, options) {
+		this.dispatchEvent(new CustomEvent(name, {
+			bubbles: true,
+			composed: true,
+			cancelable: true,
+			detail: options
+		}));
+	}
 };
-import './day-picker.tag.js';
-	import './month-picker.tag.js';
-	import './year-picker.tag.js';
-	class date_picker extends WebTag {
+import './pop-up.tag.js';
+	class time_input extends WebTag {
 		$onReady() {
-			let dayPicker = this.$view.Q('day-picker', 1);
+			this.popup = this.$view.Q('pop-up', 1);
 			this.$view.addEventListener('change', event => {
-				let value = this.A.value.split('-');
-				let order = ['year', 'month', 'day'];
-				for (let key in event.detail) {
-					value[order.indexOf(key)] = event.detail[key];
-				}
-				this.A.value = value.join('-');
+				event.stopPropagation();
 			})
 		}
-		$onFrameChange() {
-			let date = this.A.value ?? new Date().toISOString().slice(0, 10);
-			this.A.value = date;
-			this.$view.Q('#value', 1).innerHTML = date;
-			let [year, month, day] = date.split('-');
-			let dayPicker = this.$view.Q('day-picker', 1).A;
-			dayPicker.year = year;
-			dayPicker.month = month;
-			dayPicker.day = day;
-			this.$view.Q('month-picker', 1).A.month = month;
-			this.$view.Q('year-picker', 1).A.year = year;
+		open() {
+			console.log('open teim')
+			this.popup.open(this.$view.Q('#value', 1));
 		}
-		get value() {
-			return this.getAttribute('value')
+		set value(v) {
+			this.setAttribute('value', v);
+			this.$view.Q('#value', 1).innerHTML = v;
+		}
+		save() {
+			this.value = this.$view.Q('time-picker', 1).value;
+			this.$event('change');
+			this.popup.close();
+		}
+		cancel() {
+			this.popup.close();
 		}
 	}
-window.customElements.define('date-picker', date_picker)
+window.customElements.define('time-input', time_input)

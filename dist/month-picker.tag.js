@@ -56,12 +56,12 @@ STYLE.appendChild(document.createTextNode(`:host {
 		text-align: center;
 	}
 	.selected {
-		background: #ddd;
-		background: #555;
+		/* background: #ddd; */
+		background: var(--color4)
 	}
 	td:hover {
-		background: silver;
-		cursor: pointer;
+		background: var(--color4);
+		 cursor: pointer;
 	}`));
 function ATTR() {  // attributes
 	return new Proxy(
@@ -175,7 +175,7 @@ class month_picker extends WebTag {
 			this.$data = year;
 		}
 		select(node) {
-			this.A.month = node.getAttribute('month').padStart(2,'0');
+			this.A.month = node.getAttribute('month').padStart(2, '0');
 			this.$event('change', { month: this.A.month });
 		}
 		get value() {
