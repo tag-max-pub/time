@@ -1,43 +1,77 @@
 <htm>
 	<!-- <div on-tap=''></div> -->
 	<!-- <div id='back'></div> -->
-	<slot></slot>
+	<!-- <slot></slot> -->
 </htm>
 
 <script>
 	class {
 		$onReady() {
 			this.hidden = true;
+			this.$onDataChange();
+			// for (let child of this.children){
+			// 	console.log('move child',child)
+			// 	this.shadowRoot.appendChild(child)
+			// }
 			// let popup = document.Q('')
+
 			window.addEventListener('mousedown', event => {
 				// console.log(event.target, event.target.closest('pop-up'), event.composedPath())
 				// if (event.target.closest('pop-up') != this.clone)
 				// this.close();
-				if (this.clone && !event.composedPath().includes(this.clone))
-					this.close();
+
+				if (this.clone && !event.composedPath().includes(this.clone)) {
+					// console.log('clone event',this.clone)
+					this.close({ message: 'blur' });
+				}
 			})
 		}
+		$onDataChange() {
+			this.$view.innerHTML = this.innerHTML
+			console.log('popup data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
+		}
 		open(anchor) {
-			console.log('copy to root')
+			console.log('copy to root', this.$view.innerHTML)
 			let dim = anchor?.getBoundingClientRect()
 			console.log('dim', dim);
-			// this.clone = document.createElement('pop-up')
-			// this.clone.innerHTML = this.innerHTML;
+			this.clone = document.createElement('pop-up')
+			this.clone.innerHTML = this.$view.innerHTML;
+			this.clone.style.zIndex = 1000;
 			// this.clone = `<pop-up>${this.innerHTML}</pop-up>`;
 
 			// this.clone = this.cloneNode(true);
-			// document.body.appendChild(this.clone)
-			this.clone = this;
-			console.log('clone', this.clone)
+			// this.clone = this;
+			document.body.appendChild(this.clone);
+			console.log('clone', this.clone, this);
 			this.clone.style.top = dim.y + 'px';
 			this.clone.style.left = dim.x + dim.width + 'px';
 			this.clone.hidden = false;
 
-			console.log(document.body)
-		}
+			this.clone.$view.addEventListener('mousedown', event => {
+				let node = event.target.closest('[pop-up]');
+				// console.log('mousedown', event.target, node, this.clone)
+				if (this.clone && node) {
+					this.close({ message: node.getAttribute('pop-up') })
+				}
+			});
 
-		close() {
+			console.log(document.body)
+			return this.clone;
+		}
+		save() {
+
+		}
+		close(o) {
 			// this.clone.remove();
+			// this.clone.$event('close', o)
+
+			this.clone.dispatchEvent(new CustomEvent('close', {
+				bubbles: true,
+				composed: true,
+				cancelable: true,
+				detail: o
+			}));
+
 			this.clone.hidden = true;
 			this.clone = null;
 		}

@@ -160,6 +160,7 @@ function pad(x) { return (x + '').padStart(2, '0') }
 		$onReady() {
 			this.buildHours();
 			this.buildMinutes();
+			this.$onFrameChange();
 		}
 		buildHours() {
 			let hours = '';
@@ -206,11 +207,11 @@ function pad(x) { return (x + '').padStart(2, '0') }
 		}
 		setHour(node) {
 			this.hour = node.innerHTML;
-			this.$event('change', { time: this.value })
+			this.$event('change', { value: this.value })
 		}
 		setMinute(node) {
 			this.minute = node.innerHTML;
-			this.$event('change', { time: this.value })
+			this.$event('change', { value: this.value })
 		}
 	}
 window.customElements.define('time-picker', time_picker)

@@ -5,7 +5,7 @@
 <script>
 	class {
 		$onReady() {
-			console.log('add handler', this.$view.Q('main', 1))
+			// console.log('add handler', this.$view.Q('main', 1))
 
 		}
 		$onFrameChange() {
@@ -23,7 +23,7 @@
 				event.preventDefault();
 				years.scrollLeft += delta;
 			})
-			console.log('sel', this.$view.Q('.selected', 1))
+			// console.log('sel', this.$view.Q('.selected', 1))
 			setTimeout(() =>
 				this.$view.Q('.selected', 1)?.scrollIntoView({ block: 'nearest', inline: 'center' }) // , behavior:'smooth'
 				, 50);

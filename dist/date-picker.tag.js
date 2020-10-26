@@ -133,6 +133,14 @@ class WebTag extends HTMLElement {
 			HTML = new DOMParser().parseFromString(HTML, 'text/html').firstChild
 		this.$view.appendChild(HTML);
 	}
+	$event(name, options) {
+		this.dispatchEvent(new CustomEvent(name, {
+			bubbles: true,
+			composed: true,
+			cancelable: true,
+			detail: options
+		}));
+	}
 };
 import './day-picker.tag.js';
 	import './month-picker.tag.js';
@@ -147,6 +155,8 @@ import './day-picker.tag.js';
 					value[order.indexOf(key)] = event.detail[key];
 				}
 				this.A.value = value.join('-');
+				event.stopPropagation();
+				this.$event('change', { value: this.A.value })
 			})
 		}
 		$onFrameChange() {

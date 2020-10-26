@@ -29,6 +29,8 @@
 				}
 				// console.log('tmp',value)
 				this.A.value = value.join('-');
+				event.stopPropagation();
+				this.$event('change', { value: this.A.value })
 				// console.log('e', e.target, e.target.nodeName);
 				// if (e.target.nodeName == 'YEAR-PICKER')
 				// 	dayPicker.setAttribute('year', e.target.value);

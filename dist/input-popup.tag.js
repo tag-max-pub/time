@@ -20,15 +20,32 @@ Element.prototype.stringify = XML.stringify
 const HTML = document.createElement('template');
 HTML.innerHTML = `<span id='value' on-tap='open'></span>
 	<pop-up>
+		<style>
+			td[pop-up] {
+				background: #444;
+				/* color: white; */
+				font-size: 20px;
+				font-weight: 100;
+				font-family: publicSans;
+				text-align: center;
+				width: 50%;
+				padding: .5rem;
+				/* border: #aaa; */
+			}
+			td[pop-up]:hover {
+				background: #555;
+				cursor: pointer;
+			}
+		</style>
 		<table>
 			<tr>
-				<td colspan='2'>
-					<slot></slot>
+				<td colspan='2' id='content'>
+					<!-- <slot></slot> -->
 				</td>
 			</tr>
 			<tr>
-				<td on-tap='save'>save</td>
-				<td on-tap='cancel'>cancel</td>
+				<td pop-up='save'>save</td>
+				<td pop-up='cancel'>cancel</td>
 			</tr>
 		</table>
 	</pop-up>`;
@@ -38,21 +55,6 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	:host(:hover) {
 		color: red;
-		cursor: pointer;
-	}
-	td[on-tap] {
-		background: #444;
-		/* color: white; */
-		font-size: 20px;
-		font-weight: 100;
-		font-family: publicSans;
-		text-align: center;
-		width: 50%;
-		padding: .5rem;
-		/* border: #aaa; */
-	}
-	td[on-tap]:hover {
-		background: #555;
 		cursor: pointer;
 	}`));
 function QQ(query, i) {
@@ -80,6 +82,7 @@ class WebTag extends HTMLElement {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
 			} else {
+				this.$onDataChange(events); //: $onDataChange
 			}
 		}).observe(this, { attributes: true, characterData: true, attributeOldValue: true, childList: true, subtree: true });
 	}
@@ -121,16 +124,30 @@ class WebTag extends HTMLElement {
 };
 import './pop-up.tag.js';
 	class input_popup extends WebTag {
-		$onReady() {
+		async $onReady() {
 			this.popup = this.$view.Q('pop-up', 1);
-			this.$view.addEventListener('change', event => {
-				event.stopPropagation();
-			})
+			await customElements.whenDefined('pop-up')
+			this.$onDataChange()
 			this.$view.Q('#value')[0].innerHTML = this.getAttribute('placeholder')
 		}
+		$onDataChange() {
+			console.log('copy to ', this.popup.Q('#content', 1))
+			this.popup.Q('#content', 1).innerHTML = this.innerHTML;
+			console.log('input data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
+		}
 		open() {
-			console.log('open teim')
-			this.popup.open(this.$view.Q('#value', 1));
+			console.log('open time')
+			let popup = this.popup.open(this.$view.Q('#value', 1));
+			console.log('new popup', popup);
+			popup.addEventListener('change', event => {
+				console.log('popup event', event.detail, event)
+				this.tempValue = event.detail.value;
+			})
+			popup.addEventListener('close', event => {
+				console.log('popup close event', event.detail, event)
+				if (event.detail.message == 'save')
+					this.value = this.tempValue;
+			})
 		}
 		set value(v) {
 			this.setAttribute('value', v);

@@ -150,7 +150,6 @@ class WebTag extends HTMLElement {
 };
 class year_picker extends WebTag {
 		$onReady() {
-			console.log('add handler', this.$view.Q('main', 1))
 		}
 		$onFrameChange() {
 			let now = this.A.year ?? 2020;
@@ -164,7 +163,6 @@ class year_picker extends WebTag {
 				event.preventDefault();
 				years.scrollLeft += delta;
 			})
-			console.log('sel', this.$view.Q('.selected', 1))
 			setTimeout(() =>
 				this.$view.Q('.selected', 1)?.scrollIntoView({ block: 'nearest', inline: 'center' }) // , behavior:'smooth'
 				, 50);

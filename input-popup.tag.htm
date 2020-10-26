@@ -1,15 +1,33 @@
 <htm>
 	<span id='value' on-tap='open'></span>
 	<pop-up>
+		<style>
+			td[pop-up] {
+				background: #444;
+				/* color: white; */
+				font-size: 20px;
+				font-weight: 100;
+				font-family: publicSans;
+				text-align: center;
+				width: 50%;
+				padding: .5rem;
+				/* border: #aaa; */
+			}
+
+			td[pop-up]:hover {
+				background: #555;
+				cursor: pointer;
+			}
+		</style>
 		<table>
 			<tr>
-				<td colspan='2'>
-					<slot></slot>
+				<td colspan='2' id='content'>
+					<!-- <slot></slot> -->
 				</td>
 			</tr>
 			<tr>
-				<td on-tap='save'>save</td>
-				<td on-tap='cancel'>cancel</td>
+				<td pop-up='save'>save</td>
+				<td pop-up='cancel'>cancel</td>
 			</tr>
 		</table>
 	</pop-up>
@@ -18,19 +36,46 @@
 <script>
 	import './pop-up.tag.js';
 	class {
-		$onReady() {
+		async $onReady() {
 			this.popup = this.$view.Q('pop-up', 1);
-			this.$view.addEventListener('change', event => {
-				// console.log('change', event.detail);
-				// this.selected = event.detail.time
-				// this.$view.Q('#value', 1).innerHTML = event.detail.time;
-				event.stopPropagation();
-			})
+			// setTimeout(e =>
+			await customElements.whenDefined('pop-up')
+			this.$onDataChange()
+			// , 100)
+
+			// for (let child of this.children){
+			// 	console.log('move child',child)
+			// 	this.$view.Q('#content',1).appendChild(child)
+			// }
+			// this.$view.addEventListener('change', event => {
+			// 	// console.log('change', event.detail);
+			// 	// this.selected = event.detail.time
+			// 	// this.$view.Q('#value', 1).innerHTML = event.detail.time;
+			// 	event.stopPropagation();
+			// })
 			this.$view.Q('#value')[0].innerHTML = this.getAttribute('placeholder')
 		}
+		$onDataChange() {
+			// console.log('input data-change', this, this.$view, this.innerHTML);
+			console.log('copy to ', this.popup.Q('#content', 1))
+			this.popup.Q('#content', 1).innerHTML = this.innerHTML;
+			// console.log('input content', this.$view.Q('pop-up', 1).$view.Q('#content', 1), this.$view.Q('pop-up', 1).$view.Q('#content', 1).innerHTML)
+			console.log('input data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
+
+		}
 		open() {
-			console.log('open teim')
-			this.popup.open(this.$view.Q('#value', 1));
+			console.log('open time')
+			let popup = this.popup.open(this.$view.Q('#value', 1));
+			console.log('new popup', popup);
+			popup.addEventListener('change', event => {
+				console.log('popup event', event.detail, event)
+				this.tempValue = event.detail.value;
+			})
+			popup.addEventListener('close', event => {
+				console.log('popup close event', event.detail, event)
+				if (event.detail.message == 'save')
+					this.value = this.tempValue;
+			})
 		}
 
 		set value(v) {
@@ -62,23 +107,6 @@
 
 	:host(:hover) {
 		color: red;
-		cursor: pointer;
-	}
-
-	td[on-tap] {
-		background: #444;
-		/* color: white; */
-		font-size: 20px;
-		font-weight: 100;
-		font-family: publicSans;
-		text-align: center;
-		width: 50%;
-		padding: .5rem;
-		/* border: #aaa; */
-	}
-
-	td[on-tap]:hover {
-		background: #555;
 		cursor: pointer;
 	}
 </style>
