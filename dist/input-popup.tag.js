@@ -138,7 +138,7 @@ import './pop-up.tag.js';
 		}
 		open() {
 			console.log('open time')
-			let popup = this.popup.open(this.$view.Q('#value', 1));
+			let popup = this.popup.open(this);
 			console.log('new popup', popup);
 			popup.addEventListener('change', event => {
 				console.log('popup event', event.detail, event)
