@@ -23,6 +23,7 @@ HTML.innerHTML = `<span id='value' on-tap='open'></span>
 		<style>
 			td[pop-up] {
 				background: #444;
+				color: white;
 				/* color: white; */
 				font-size: 20px;
 				font-weight: 100;
