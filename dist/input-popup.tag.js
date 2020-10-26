@@ -26,7 +26,7 @@ HTML.innerHTML = `<span id='value' on-tap='open'></span>
 				/* color: white; */
 				font-size: 20px;
 				font-weight: 100;
-				font-family: publicSans;
+				font-family: publicSans, Helvetica, sans-serif;
 				text-align: center;
 				width: 50%;
 				padding: .5rem;
