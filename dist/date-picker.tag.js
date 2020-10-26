@@ -36,6 +36,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		--color4: #444;
 		width: 13rem;
 	}
+	* {
+		color: var(--color1);
+	}
 	htm>* {
 		display: block;
 		border-bottom: 1px solid var(--color4);

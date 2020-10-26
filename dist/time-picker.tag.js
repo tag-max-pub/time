@@ -45,6 +45,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		width: 13rem;
 		border: 1px solid var(--color4)
 	}
+	* {
+		color: var(--color1);
+	}
 	#value {
 		padding: .5rem 0;
 		font-size: 30px;
