@@ -48,6 +48,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		/* font-weight: 100; */
 		font-family: publicSans, Helvetica, sans-serif;
 	}
+	* {
+		color: var(--color1);
+	}
 	table {
 		width: 100%;
 	}
@@ -61,7 +64,7 @@ STYLE.appendChild(document.createTextNode(`:host {
 	}
 	td:hover {
 		background: var(--color4);
-		 cursor: pointer;
+		cursor: pointer;
 	}`));
 function ATTR() {  // attributes
 	return new Proxy(

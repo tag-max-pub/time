@@ -29,6 +29,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		width: 220px;
 		/* scrollbar-width: none; */
 	}
+	* {
+		color: var(--color1);
+	}
 	main {
 		overflow: scroll;
 		scrollbar-width: none;

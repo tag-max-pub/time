@@ -47,6 +47,9 @@ STYLE.appendChild(document.createTextNode(`:host {
 		/* font-family: "Lucida Console"; */
 		font-family: publicSans, Helvetica, sans-serif;
 	}
+	* {
+		color: var(--color1);
+	}
 	td {
 		padding: .3rem;
 		text-align: right;
