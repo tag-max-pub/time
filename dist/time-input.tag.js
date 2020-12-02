@@ -144,4 +144,4 @@ import './pop-up.tag.js';
 			this.popup.close();
 		}
 	}
-window.customElements.define('time-input', time_input)
+window.customElements.define('time-input', time_input)

@@ -75,4 +75,4 @@ class WebTag extends HTMLElement {
 };
 class empty_frame extends WebTag {
 	}
-window.customElements.define('empty-frame', empty_frame)
+window.customElements.define('empty-frame', empty_frame)

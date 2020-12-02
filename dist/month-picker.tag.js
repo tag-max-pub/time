@@ -185,4 +185,4 @@ class month_picker extends WebTag {
 			return this.A.month;
 		}
 	}
-window.customElements.define('month-picker', month_picker)
+window.customElements.define('month-picker', month_picker)

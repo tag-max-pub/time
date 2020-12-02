@@ -178,4 +178,4 @@ class year_picker extends WebTag {
 			return this.A.month;
 		}
 	}
-window.customElements.define('year-picker', year_picker)
+window.customElements.define('year-picker', year_picker)

@@ -12,6 +12,7 @@
 		import './dist/input-popup.tag.js';
 		import './dist/time-input.tag.js';
 		import './dist/empty-frame.tag.js';
+		import './dist/time-format.tag.js';
 	</script>
 	<style>
 		h2 {
@@ -20,6 +21,10 @@
 
 		input-popup {
 			width: 300px;
+		}
+
+		time-format {
+			display: block;
 		}
 	</style>
 </head>
@@ -50,7 +55,9 @@
 		<empty-frame>
 			<time-input></time-input>
 		</empty-frame> -->
-
+		<!-- format: -->
+		<time-format time='2020-07-11T12:30:00' format='DDDD, DD. MMMM YYYY'></time-format>
+		<time-format time='2020-07-11T12:30:00' format='DDD., DD. MMM. YY'></time-format>
 	</article>
 </body>
 

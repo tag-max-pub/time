@@ -28,12 +28,12 @@
 		}
 		$onDataChange() {
 			this.$view.innerHTML = this.innerHTML
-			console.log('popup data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
+			// console.log('popup data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
 		}
 		open(anchor) {
-			console.log('copy to root', this.$view.innerHTML)
+			// console.log('copy to root', this.$view.innerHTML)
 			let dim = anchor?.getBoundingClientRect()
-			console.log('dim', dim);
+			// console.log('dim', dim);
 			this.clone = document.createElement('pop-up')
 			this.clone.innerHTML = this.$view.innerHTML;
 			this.clone.style.zIndex = 1000;
@@ -42,7 +42,7 @@
 			// this.clone = this.cloneNode(true);
 			// this.clone = this;
 			document.body.appendChild(this.clone);
-			console.log('clone', this.clone, this);
+			// console.log('clone', this.clone, this);
 			this.clone.style.top = dim.y + 'px';
 			this.clone.style.left = dim.x + dim.width + 'px';
 			this.clone.hidden = false;
@@ -55,7 +55,7 @@
 				}
 			});
 
-			console.log(document.body)
+			// console.log(document.body)
 			return this.clone;
 		}
 		save() {

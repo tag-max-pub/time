@@ -217,4 +217,4 @@ function pad(x) { return (x + '').padStart(2, '0') }
 			this.$event('change', { value: this.value })
 		}
 	}
-window.customElements.define('time-picker', time_picker)
+window.customElements.define('time-picker', time_picker)

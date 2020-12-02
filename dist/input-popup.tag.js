@@ -132,20 +132,15 @@ import './pop-up.tag.js';
 			this.$view.Q('#value')[0].innerHTML = this.getAttribute('placeholder')
 		}
 		$onDataChange() {
-			console.log('copy to ', this.popup.Q('#content', 1))
 			this.popup.Q('#content', 1).innerHTML = this.innerHTML;
-			console.log('input data-change', this, this.innerHTML, '\n\n', this.$view, this.$view.innerHTML);
 		}
 		open() {
-			console.log('open time')
 			let popup = this.popup.open(this);
-			console.log('new popup', popup);
 			popup.addEventListener('change', event => {
 				console.log('popup event', event.detail, event)
 				this.tempValue = event.detail.value;
 			})
 			popup.addEventListener('close', event => {
-				console.log('popup close event', event.detail, event)
 				if (event.detail.message == 'save')
 					this.value = this.tempValue;
 			})
@@ -164,4 +159,4 @@ import './pop-up.tag.js';
 			this.popup.close();
 		}
 	}
-window.customElements.define('input-popup', input_popup)
+window.customElements.define('input-popup', input_popup)

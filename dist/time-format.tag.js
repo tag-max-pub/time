@@ -1,4 +1,4 @@
-console.log('pop-up', import.meta.url);
+console.log('time-format', import.meta.url);
 function NODE(name, attributes = {}, children = []) {
 	let node = document.createElement(name);
 	for (let key in attributes)
@@ -18,22 +18,23 @@ class XML {
 XMLDocument.prototype.stringify = XML.stringify
 Element.prototype.stringify = XML.stringify
 const HTML = document.createElement('template');
-HTML.innerHTML = `<!-- <div on-tap=''></div> -->
-	<!-- <div id='back'></div> -->
-	<!-- <slot></slot> -->`;
+HTML.innerHTML = ``;
 let STYLE = document.createElement('style');
-STYLE.appendChild(document.createTextNode(`:host {
-		position: absolute;
-		/* padding: 1rem; */
-		background: #333;
-	}`));
-function QQ(query, i) {
-	let result = Array.from(this.querySelectorAll(query));
-	return i ? result?.[i - 1] : result;
+STYLE.appendChild(document.createTextNode(``));
+function ATTR() {  // attributes
+	return new Proxy(
+		Object.fromEntries(Array.from(this.attributes).map(x => [x.nodeName, x.nodeValue])),
+		{
+			set: (target, key, value) => {
+				if (this.getAttribute(key) != value)
+					this.setAttribute(key, value);
+				return Reflect.set(target, key, value);
+			}
+		}
+	)
 }
-Element.prototype.Q = QQ
-ShadowRoot.prototype.Q = QQ
-DocumentFragment.prototype.Q = QQ
+Object.defineProperty(Element.prototype, "A", { get: ATTR, configurable:true });
+Object.defineProperty(DocumentFragment.prototype, "A", { get: ATTR, configurable:true });
 class WebTag extends HTMLElement {
 	constructor() {
 		super();
@@ -46,13 +47,16 @@ class WebTag extends HTMLElement {
 		this.$applyHTML(); //: HTML
 		this.$attachMutationObservers();
 		this.$attachEventListeners();
-		this.$onReady(); //: onReady
+		this.$onFrameChange();  //: onFrameChange
 	}
 	$attachMutationObservers() {
 		this.modelObserver = new MutationObserver(events => {
 			if ((events[0].type == 'attributes') && (events[0].target == this)) {
+				this.$onFrameChange(
+					this.A,//Object.fromEntries(events.map(e => [e.attributeName, this.getAttribute(e.attributeName)])),
+					Object.fromEntries(events.map(e => [e.attributeName, e.oldValue]))
+				);
 			} else {
-				this.$onDataChange(events); //: $onDataChange
 			}
 		}).observe(this, { attributes: true, characterData: true, attributeOldValue: true, childList: true, subtree: true });
 	}
@@ -65,7 +69,6 @@ class WebTag extends HTMLElement {
 			}
 			catch { }
 		}
-		this.addEventListener('click', e => action(e, 'on-tap')); //: onTap
 	}
 	$applyHTML() {
 		this.$view = HTML.content.cloneNode(true)
@@ -84,47 +87,15 @@ class WebTag extends HTMLElement {
 		this.$view.appendChild(HTML);
 	}
 };
-class pop_up extends WebTag {
-		$onReady() {
-			this.hidden = true;
-			this.$onDataChange();
-			window.addEventListener('mousedown', event => {
-				if (this.clone && !event.composedPath().includes(this.clone)) {
-					this.close({ message: 'blur' });
-				}
-			})
-		}
-		$onDataChange() {
-			this.$view.innerHTML = this.innerHTML
-		}
-		open(anchor) {
-			let dim = anchor?.getBoundingClientRect()
-			this.clone = document.createElement('pop-up')
-			this.clone.innerHTML = this.$view.innerHTML;
-			this.clone.style.zIndex = 1000;
-			document.body.appendChild(this.clone);
-			this.clone.style.top = dim.y + 'px';
-			this.clone.style.left = dim.x + dim.width + 'px';
-			this.clone.hidden = false;
-			this.clone.$view.addEventListener('mousedown', event => {
-				let node = event.target.closest('[pop-up]');
-				if (this.clone && node) {
-					this.close({ message: node.getAttribute('pop-up') })
-				}
-			});
-			return this.clone;
-		}
-		save() {
-		}
-		close(o) {
-			this.clone.dispatchEvent(new CustomEvent('close', {
-				bubbles: true,
-				composed: true,
-				cancelable: true,
-				detail: o
-			}));
-			this.clone.hidden = true;
-			this.clone = null;
+import {format} from 'https://max.pub/lib/date.mjs'
+	class time_format extends WebTag {
+		$onFrameChange(){
+			console.log('format',this.A)
+			let date = new Date(Date.parse(this.A.time));
+			console.log('date',date)
+			let output = format(date,this.A.format)
+			console.log('output',output)
+			this.$view.textContent = output
 		}
 	}
-window.customElements.define('pop-up', pop_up)
+window.customElements.define('time-format', time_format)

@@ -192,4 +192,4 @@ class day_picker extends WebTag {
 			return this.A.value;
 		}
 	}
-window.customElements.define('day-picker', day_picker)
+window.customElements.define('day-picker', day_picker)

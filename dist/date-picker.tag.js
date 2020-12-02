@@ -178,4 +178,4 @@ import './day-picker.tag.js';
 			return this.getAttribute('value')
 		}
 	}
-window.customElements.define('date-picker', date_picker)
+window.customElements.define('date-picker', date_picker)
