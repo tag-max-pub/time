@@ -90,11 +90,8 @@ class WebTag extends HTMLElement {
 import {format} from 'https://max.pub/lib/date.mjs'
 	class time_format extends WebTag {
 		$onFrameChange(){
-			console.log('format',this.A)
 			let date = new Date(Date.parse(this.A.time));
-			console.log('date',date)
 			let output = format(date,this.A.format)
-			console.log('output',output)
 			this.$view.textContent = output
 		}
 	}

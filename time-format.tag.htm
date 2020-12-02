@@ -5,11 +5,11 @@
 
 	class {
 		$onFrameChange(){
-			console.log('format',this.A)
+			// console.log('format',this.A)
 			let date = new Date(Date.parse(this.A.time));
-			console.log('date',date)
+			// console.log('date',date)
 			let output = format(date,this.A.format)
-			console.log('output',output)
+			// console.log('output',output)
 			this.$view.textContent = output
 		}
 	}
