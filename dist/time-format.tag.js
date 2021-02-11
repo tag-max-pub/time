@@ -87,7 +87,7 @@ class WebTag extends HTMLElement {
 		this.$view.appendChild(HTML);
 	}
 };
-import {format} from 'https://max.pub/lib/date.mjs'
+import {format} from 'https://js.max.pub/date/raw.mjs'
 	class time_format extends WebTag {
 		$onFrameChange(){
 			let date = new Date(Date.parse(this.A.time));
