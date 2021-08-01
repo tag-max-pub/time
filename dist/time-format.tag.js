@@ -87,11 +87,11 @@ class WebTag extends HTMLElement {
 		this.$view.appendChild(HTML);
 	}
 };
-import {format} from 'https://js.max.pub/date/raw.mjs'
+import { format } from 'https://v.max.pub/@js-max-pub/date/2021/mod.js'
 	class time_format extends WebTag {
-		$onFrameChange(){
+		$onFrameChange() {
 			let date = new Date(Date.parse(this.A.time));
-			let output = format(date,this.A.format)
+			let output = format(date, this.A.format)
 			this.$view.textContent = output
 		}
 	}
