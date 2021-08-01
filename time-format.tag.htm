@@ -1,14 +1,14 @@
 <htm></htm>
 <style></style>
 <script>
-	import {format} from 'https://js.max.pub/date/raw.mjs'
+	import { format } from 'https://v.max.pub/@js-max-pub/date/2021/mod.js'
 
 	class {
-		$onFrameChange(){
+		$onFrameChange() {
 			// console.log('format',this.A)
 			let date = new Date(Date.parse(this.A.time));
 			// console.log('date',date)
-			let output = format(date,this.A.format)
+			let output = format(date, this.A.format)
 			// console.log('output',output)
 			this.$view.textContent = output
 		}
